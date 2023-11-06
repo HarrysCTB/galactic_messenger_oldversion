@@ -1,0 +1,50 @@
+plugins {
+    id 'application'
+}
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testImplementation 'org.junit.jupiter:junit-jupiter:5.9.3'
+    testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+    implementation 'com.google.guava:guava:32.1.1-jre'
+}
+
+java {
+    toolchain {
+        languageVersion = JavaLanguageVersion.of(20)
+    }
+}
+
+task clientJar(type: Jar) {
+    archiveFileName.set("galactic_messenger_client.jar")
+    destinationDirectory.set(file("../"))
+    manifest {
+        attributes 'Main-Class': 'galactic_messenger.client.Client'
+    }
+    from sourceSets.main.output
+}
+
+task serverJar(type: Jar) {
+    archiveFileName.set("galactic_messenger_server.jar")
+    destinationDirectory.set(file("../"))
+    manifest {
+        attributes 'Main-Class': 'galactic_messenger.server.Server'
+    }
+    from sourceSets.main.output
+}
+
+jar {
+    dependsOn clientJar, serverJar
+}
+
+clean {
+    delete file("../galactic_messenger_client.jar")
+    delete file("../galactic_messenger_server.jar")
+}
+
+tasks.named('test') {
+    useJUnitPlatform()
+}
